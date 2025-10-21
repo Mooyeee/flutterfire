@@ -93,7 +93,10 @@ let package = Package(
     .library(name: "firebase-auth", targets: ["firebase_auth"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/firebase/firebase-ios-sdk", from: firebase_sdk_version),
+    .package(
+      url: "https://github.com/Mooyeee/firebase-ios-sdk.git",
+      branch: "mooyee"
+    ),
     .package(url: "https://github.com/firebase/flutterfire", exact: shared_spm_version),
   ],
   targets: [

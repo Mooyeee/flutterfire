@@ -1508,9 +1508,22 @@ static void handleAppleAuthResult(FLTFirebaseAuthPlugin *object, AuthPigeonFireb
     return;
   }
 #if TARGET_OS_OSX
-  NSLog(@"signInWithProvider is not supported on the "
-        @"MacOS platform.");
-  completion(nil, nil);
+  self.authProvider = [FIROAuthProvider providerWithProviderID:signInProvider.providerId auth:auth];
+  NSArray *scopes = signInProvider.scopes;
+  if (scopes != nil) {
+    [self.authProvider setScopes:scopes];
+  }
+  NSDictionary *customParameters = signInProvider.customParameters;
+  if (customParameters != nil) {
+    [self.authProvider setCustomParameters:customParameters];
+  }
+
+  [self.authProvider
+      getCredentialWithUIDelegate:nil
+                       completion:^(FIRAuthCredential *_Nullable credential,
+                                    NSError *_Nullable error) {
+                         handleAppleAuthResult(self, app, auth, credential, error, completion);
+                       }];
 #else
   self.authProvider = [FIROAuthProvider providerWithProviderID:signInProvider.providerId auth:auth];
   NSArray *scopes = signInProvider.scopes;

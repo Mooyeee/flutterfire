@@ -332,6 +332,20 @@ class _AuthGateState extends State<AuthGate> {
                               ],
                             ),
                           ),
+                          const SizedBox(height: 120),
+                          TextButton(
+                            onPressed: () {
+                              final msalProvider = OAuthProvider(
+                                  MicrosoftAuthProvider.PROVIDER_ID)
+                                ..setCustomParameters({
+                                  "tenant":
+                                      "b00367e2-193a-4f48-94de-7245d45c0947",
+                                  "grant_type": "client_credentials",
+                                });
+                              auth.signInWithProvider(msalProvider);
+                            },
+                            child: Text("Try with Provider"),
+                          ),
                         ],
                       ),
                     ),
