@@ -934,30 +934,22 @@ public class FLTFirebaseAuthPlugin: NSObject, FlutterPlugin, FLTFirebasePluginPr
       launchAppleSignInRequest(app: app, signInProvider: signInProvider, completion: completion)
       return
     }
-    #if os(macOS)
-      print("signInWithProvider is not supported on the MacOS platform.")
-      completion(
-        .failure(
-          FlutterError(
-            code: "unsupported-platform", message: "signInWithProvider is not supported on macOS",
-            details: nil)))
-    #else
-      authProvider = OAuthProvider(providerID: signInProvider.providerId, auth: auth)
-      if let scopes = signInProvider.scopes {
-        authProvider?.scopes = scopes.compactMap { $0 }
+
+    authProvider = OAuthProvider(providerID: signInProvider.providerId, auth: auth)
+    if let scopes = signInProvider.scopes {
+      authProvider?.scopes = scopes.compactMap { $0 }
+    }
+    if let customParameters = signInProvider.customParameters {
+      var converted: [String: String] = [:]
+      for (key, value) in customParameters {
+        if let key, let value { converted[key] = value }
       }
-      if let customParameters = signInProvider.customParameters {
-        var converted: [String: String] = [:]
-        for (key, value) in customParameters {
-          if let key, let value { converted[key] = value }
-        }
-        authProvider?.customParameters = converted
-      }
-      authProvider?.getCredentialWith(nil) { credential, error in
-        self.handleAppleAuthResult(
-          app: app, auth: auth, credentials: credential, error: error, completion: completion)
-      }
-    #endif
+      authProvider?.customParameters = converted
+    }
+    authProvider?.getCredentialWith(nil) { credential, error in
+      self.handleAppleAuthResult(
+        app: app, auth: auth, credentials: credential, error: error, completion: completion)
+    }
   }
 
   func signOut(app: AuthPigeonFirebaseApp, completion: @escaping (Result<Void, Error>) -> Void) {
